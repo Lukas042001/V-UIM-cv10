@@ -107,6 +107,23 @@ class Sequential:
         """
         # assert  Ověřte, že seznam self.layers neni prazdny
         # assert  Ověřte, že x je 2D pole (n_vzorku, n_vstupu)
+
+        assert len(self.layers) > 0
+        assert isinstance(x, np.ndarray)
+        assert x.ndim == 2
+
+        self.io_ = [x]
+        self.z_ = []
+
+        for layer in self.layers:
+            z = layer.linear(self.io_[-1])
+            self.z_.append(z)
+
+            a = layer.activation(z)
+            self.io_.append(a)
+
+        return self.io_[-1]
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09 + rozsireni) nastavte self.io_ = [x] a "
             "self.z_ = []; pro kazdou vrstvu spocitejte z = layer.linear(self.io_[-1]), "
@@ -147,6 +164,32 @@ class Sequential:
         """
         # assert  Ověřte, že self.io_ a self.z_ nejsou None (nejdriv musi probehnout forward)
         # assert  Ověřte, že loss_gradient ma stejny tvar jako vystup site self.io_[-1]
+
+        assert self.io_ is not None
+        assert self.z_ is not None
+        assert loss_gradient.shape == self.io_[-1].shape
+
+        grad = loss_gradient
+        gradients = []
+
+        for k in reversed(range(len(self.layers))):
+            layer = self.layers[k]
+
+            delta = grad * layer.activation.derivative(self.z_[k])
+
+            dW = self.io_[k].T @ delta
+
+            if layer.linear.bias is not None:
+                db = delta.sum(axis=0)
+            else:
+                db = None
+
+            gradients.insert(0, (dW, db))
+
+            grad = delta @ layer.linear.weights.T
+
+        return gradients
+
         raise NotImplementedError(
             "Úkol: implementujte zpetne sireni chyby - od posledni vrstvy k prvni "
             "spocitejte delta = grad * activation.derivative(z), dW = io_[k].T @ delta, "
@@ -172,6 +215,12 @@ class Sequential:
             Kladna delka kroku gradientniho sestupu.
         """
         # assert  Ověřte, že pocet gradientu odpovida poctu vrstev
+
+        assert len(gradients) == len(self.layers)
+
+        for layer, (dW, db) in zip(self.layers, gradients):
+            layer.linear.update(dW, db, learning_rate)
+
         raise NotImplementedError(
             "Úkol: pro kazdou dvojici (layer, (dW, db)) ze zip(self.layers, gradients) "
             "zavolejte layer.linear.update(dW, db, learning_rate)."

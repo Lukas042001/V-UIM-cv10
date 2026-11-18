@@ -130,6 +130,12 @@ class Step(Activation):
         """
         # assert  Ověřte, že x je typu np.ndarray
         # assert  Ověřte, že vystup obsahuje jen hodnoty 0.0 a 1.0
+
+        assert isinstance(x, np.ndarray)
+        vystup = np.where(x >= 0, 1.0, 0.0)
+        assert np.all((vystup == 0.0) | (vystup == 1.0))
+        return vystup
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) implementujte f(x) = 1 pro x >= 0, "
             "jinak 0, vektorizovane pomoci np.where."
@@ -158,6 +164,10 @@ class Step(Activation):
             Nulove pole stejneho tvaru jako `x` (typ float).
         """
         # assert  Ověřte, že x je typu np.ndarray
+
+        assert isinstance(x, np.ndarray)
+        return np.zeros_like(x, dtype=float)
+
         raise NotImplementedError(
             "Úkol: vratte nulove pole stejneho tvaru jako x (np.zeros_like "
             "s dtype float) - derivace skoku je vsude nulova, v bode 0 "
@@ -174,6 +184,9 @@ class Step(Activation):
             Konstantni dvojice `(0.0, 1.0)`.
         """
         # assert  Ověřte, že vracite tuple dvou float hodnot, ne list ani int
+
+        return (0.0, 1.0)
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) vratte konstantni tuple (0.0, 1.0) "
             "jako obor hodnot Step aktivace."
@@ -218,6 +231,11 @@ class Sigmoid(Activation):
         """
         # assert  Ověřte, že x je typu np.ndarray
         # assert  Ověřte, že self.temperature je kladne cislo
+
+        assert isinstance(x, np.ndarray)
+        assert self.temperature > 0
+        return 1.0 / (1.0 + np.exp(-x / self.temperature))
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) implementujte f(x) = 1 / (1 + exp(-x / "
             "self.temperature)) pomoci np.exp, vektorizovane pres cele pole x."
@@ -249,6 +267,12 @@ class Sigmoid(Activation):
         """
         # assert  Ověřte, že x je typu np.ndarray
         # assert  Ověřte, že self.temperature je kladne cislo
+
+        assert isinstance(x, np.ndarray)
+        assert self.temperature > 0
+        s = self.forward(x)
+        return (1.0 / self.temperature) * s * (1.0 - s)
+
         raise NotImplementedError(
             "Úkol: spocitejte s = self.forward(x) a vratte "
             "(1.0 / self.temperature) * s * (1.0 - s)."
@@ -264,6 +288,9 @@ class Sigmoid(Activation):
             Konstantni dvojice `(0.0, 1.0)`.
         """
         # assert  Ověřte, že vracite tuple dvou float hodnot, ne list ani int
+
+        return (0.0, 1.0)
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) vratte konstantni tuple (0.0, 1.0) "
             "jako obor hodnot Sigmoid aktivace."
@@ -295,6 +322,10 @@ class Tanh(Activation):
             Pole stejneho tvaru jako `x` s hodnotami v otevrenem intervalu (-1.0, 1.0).
         """
         # assert  Ověřte, že x je typu np.ndarray
+
+        assert isinstance(x, np.ndarray)
+        return np.tanh(x)
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) implementujte f(x) = tanh(x) pomoci "
             "np.tanh, vektorizovane pres cele pole x."
@@ -321,6 +352,11 @@ class Tanh(Activation):
             Pole stejneho tvaru jako `x` s hodnotami v intervalu (0.0, 1.0].
         """
         # assert  Ověřte, že x je typu np.ndarray
+
+        assert isinstance(x, np.ndarray)
+        t = self.forward(x)
+        return 1.0 - t ** 2
+
         raise NotImplementedError(
             "Úkol: spocitejte t = self.forward(x) a vratte 1.0 - t**2."
         )
@@ -335,6 +371,9 @@ class Tanh(Activation):
             Konstantni dvojice `(-1.0, 1.0)`.
         """
         # assert  Ověřte, že vracite tuple dvou float hodnot, ne list ani int
+
+        return (-1.0, 1.0)
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) vratte konstantni tuple (-1.0, 1.0) "
             "jako obor hodnot Tanh aktivace."
@@ -367,6 +406,10 @@ class ReLU(Activation):
             Pole stejneho tvaru jako `x` s hodnotami v intervalu [0.0, +inf).
         """
         # assert  Ověřte, že x je typu np.ndarray
+
+        assert isinstance(x, np.ndarray)
+        return np.maximum(0.0, x)
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) implementujte f(x) = max(0, x) pomoci "
             "np.maximum, vektorizovane pres cele pole x."
@@ -393,6 +436,10 @@ class ReLU(Activation):
             Pole stejneho tvaru jako `x` s hodnotami z mnoziny {0.0, 1.0}.
         """
         # assert  Ověřte, že x je typu np.ndarray
+
+        assert isinstance(x, np.ndarray)
+        return (x > 0).astype(float)
+
         raise NotImplementedError(
             "Úkol: vratte 1.0 tam, kde x > 0, jinak 0.0 (napr. "
             "(x > 0).astype(float)); v bode x = 0 konvencne 0."
@@ -408,6 +455,9 @@ class ReLU(Activation):
             Konstantni dvojice `(0.0, np.inf)`.
         """
         # assert  Ověřte, že horni mez je +nekonecno (np.inf), ne konecne cislo
+
+        return (0.0, np.inf)
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) vratte konstantni tuple (0.0, np.inf) "
             "jako obor hodnot ReLU aktivace."
@@ -439,6 +489,10 @@ class ReLU6(Activation):
             Pole stejneho tvaru jako `x` s hodnotami v intervalu [0.0, 6.0].
         """
         # assert  Ověřte, že x je typu np.ndarray
+
+        assert isinstance(x, np.ndarray)
+        return np.clip(x, 0.0, 6.0)
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) implementujte f(x) = min(max(0, x), 6) "
             "pomoci np.clip, vektorizovane pres cele pole x."
@@ -464,6 +518,10 @@ class ReLU6(Activation):
             Pole stejneho tvaru jako `x` s hodnotami z mnoziny {0.0, 1.0}.
         """
         # assert  Ověřte, že x je typu np.ndarray
+
+        assert isinstance(x, np.ndarray)
+        return ((x > 0) & (x < 6)).astype(float)
+
         raise NotImplementedError(
             "Úkol: vratte 1.0 tam, kde 0 < x < 6, jinak 0.0 (napr. "
             "((x > 0) & (x < 6)).astype(float))."
@@ -479,6 +537,9 @@ class ReLU6(Activation):
             Konstantni dvojice `(0.0, 6.0)`.
         """
         # assert  Ověřte, že vracite tuple dvou float hodnot, ne list ani int
+
+        return (0.0, 6.0)
+
         raise NotImplementedError(
             "Úkol: (brana z Cviceni 09) vratte konstantni tuple (0.0, 6.0) "
             "jako obor hodnot ReLU6 aktivace."
